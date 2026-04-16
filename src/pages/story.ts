@@ -21,14 +21,14 @@ export function buildStoryPage(baseUrl: string) {
   elements.legacy = {
     type: 'item_group' as const,
     props: { separator: true },
-    children: ['ltaw3_item', 'seasons_item', 'evolution_item'],
+    children: ['ltaw3_item', 'seasons_item', 'guests_item', 'evolution_item'],
   };
 
   elements.ltaw3_item = {
     type: 'item' as const,
     props: {
       title: BACKSTORY.predecessor,
-      description: `${BACKSTORY.totalEpisodes} episodes across ${BACKSTORY.seasons} seasons (${BACKSTORY.runDates})`,
+      description: `${BACKSTORY.totalEpisodes} episodes, ${BACKSTORY.seasons} seasons (${BACKSTORY.runDates})`,
     },
     children: ['ltaw3_badge'],
   };
@@ -50,6 +50,19 @@ export function buildStoryPage(baseUrl: string) {
     props: { label: 'OG Hosts', color: 'green' as const, icon: 'users' as const },
   };
 
+  elements.guests_item = {
+    type: 'item' as const,
+    props: {
+      title: 'Notable Guests',
+      description: BACKSTORY.notableGuests,
+    },
+    children: ['guests_badge'],
+  };
+  elements.guests_badge = {
+    type: 'badge' as const,
+    props: { label: '5 guests', color: 'teal' as const, icon: 'star' as const },
+  };
+
   elements.evolution_item = {
     type: 'item' as const,
     props: {
@@ -58,13 +71,22 @@ export function buildStoryPage(baseUrl: string) {
     },
   };
 
-  // What changed text
-  elements.whats_new = {
+  // Why it works
+  elements.why = {
     type: 'text' as const,
     props: {
-      content:
-        'LTAW3 covered all of Web3. Now we go deep on one chain. Three perspectives: artist rights, HBCU education, independent media.',
+      content: BACKSTORY.whyItWorks,
       size: 'sm' as const,
+    },
+  };
+
+  // Credit line
+  elements.credit = {
+    type: 'text' as const,
+    props: {
+      content: SHOW.credit,
+      size: 'sm' as const,
+      align: 'center' as const,
     },
   };
 
@@ -101,7 +123,7 @@ export function buildStoryPage(baseUrl: string) {
   elements.page = {
     type: 'stack' as const,
     props: { direction: 'vertical' as const, gap: 'md' as const },
-    children: ['header', 'legacy', 'whats_new', 'btn_row'],
+    children: ['header', 'legacy', 'why', 'credit', 'btn_row'],
   };
 
   return {

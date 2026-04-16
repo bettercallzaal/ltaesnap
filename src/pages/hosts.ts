@@ -27,11 +27,13 @@ export function buildHostsPage(baseUrl: string) {
     const profileBtnId = `profile_${i}`;
     hostItemIds.push(itemId);
 
+    const angleBadgeId = `angle_${i}`;
+
     elements[itemId] = {
       type: 'item' as const,
       props: {
-        title: `@${host.username}`,
-        description: host.bio,
+        title: `@${host.username} - ${host.displayName}`,
+        description: `${host.bio} | ${host.angle}`,
       },
       children: [profileBtnId],
     };

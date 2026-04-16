@@ -4,6 +4,7 @@ export interface Host {
   fid: number;
   pfpUrl: string;
   bio: string;
+  angle: string;
 }
 
 export const hosts: Host[] = [
@@ -13,7 +14,8 @@ export const hosts: Host[] = [
     fid: 19640,
     pfpUrl:
       'https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/f9277373-2f85-411b-5d94-d8e11a43de00/original',
-    bio: 'Founder of The ZAO - independent artist profit margins & IP rights',
+    bio: 'Founder of The ZAO',
+    angle: 'Artist rights & IP',
   },
   {
     username: 'ohnahji',
@@ -21,13 +23,15 @@ export const hosts: Host[] = [
     fid: 262222,
     pfpUrl:
       'https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/25bd25c2-a096-47cc-9143-6a08b7a40100/original',
-    bio: "Web3's first HBCU - educating about blockchain & AI",
+    bio: "Web3's first HBCU",
+    angle: 'Education & HBCUs',
   },
   {
     username: 'wethemniggas',
-    displayName: 'wethemniggas.eth',
+    displayName: 'Maceo',
     fid: 361974,
     pfpUrl: 'https://i.imgur.com/DHt8XDN.jpg',
-    bio: 'We Them Media - metalabel centering BIPOC voices',
+    bio: 'Founder of We Them Media',
+    angle: 'Independent media & BIPOC voices',
   },
 ];
