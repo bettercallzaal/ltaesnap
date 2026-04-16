@@ -1,113 +1,162 @@
 import type { Episode } from '../data/episodes.js';
 import { SHOW } from '../data/episodes.js';
-import { hosts } from '../data/hosts.js';
 
 export function buildEpisodePage(ep: Episode, baseUrl: string) {
-  const elements: Record<string, any> = {
-    page: {
-      type: 'stack' as const,
-      props: { direction: 'vertical' as const, gap: 'md' as const },
-      children: SHOW.coverImage
-        ? ['cover', 'show_name', 'ep_title', 'meta', 'desc', 'badges', 'btn_listen', 'btn_row']
-        : ['show_name', 'ep_title', 'meta', 'desc', 'badges', 'btn_listen', 'btn_row'],
+  const children: string[] = [];
+  const elements: Record<string, any> = {};
+
+  // Cover art (if set)
+  if (SHOW.coverImage) {
+    children.push('cover');
+    elements.cover = {
+      type: 'image' as const,
+      props: { url: SHOW.coverImage, aspect: '16:9' as const },
+    };
+  }
+
+  // Show header as item with badge
+  children.push('header');
+  elements.header = {
+    type: 'item' as const,
+    props: {
+      title: SHOW.name,
+      description: SHOW.tagline,
     },
-    show_name: {
-      type: 'text' as const,
-      props: { content: SHOW.name, weight: 'bold' as const },
+    children: ['live_badge'],
+  };
+  elements.live_badge = {
+    type: 'badge' as const,
+    props: { label: 'Podcast', color: 'purple' as const, icon: 'play' as const },
+  };
+
+  // Separator
+  children.push('divider1');
+  elements.divider1 = { type: 'separator' as const, props: {} };
+
+  // Episode details as item_group
+  children.push('ep_details');
+  elements.ep_details = {
+    type: 'item_group' as const,
+    props: { separator: true },
+    children: ['ep_title_item', 'ep_hosts_item', 'ep_about_item'],
+  };
+
+  elements.ep_title_item = {
+    type: 'item' as const,
+    props: {
+      title: `Ep ${ep.number}: ${ep.title}`,
+      description: ep.date,
     },
-    ep_title: {
-      type: 'text' as const,
-      props: { content: `Ep ${ep.number}: ${ep.title}`, weight: 'bold' as const },
+    children: ep.isNew ? ['new_badge'] : ['topic_badge'],
+  };
+  elements.new_badge = {
+    type: 'badge' as const,
+    props: { label: 'NEW', color: 'green' as const, icon: 'zap' as const },
+  };
+  elements.topic_badge = {
+    type: 'badge' as const,
+    props: { label: ep.topic, color: 'blue' as const },
+  };
+
+  elements.ep_hosts_item = {
+    type: 'item' as const,
+    props: {
+      title: 'Hosts',
+      description: ep.guests,
     },
-    meta: {
-      type: 'text' as const,
-      props: {
-        content: `${ep.guests} - ${ep.duration} - ${ep.date}`,
-        size: 'sm' as const,
-      },
+    children: ['hosts_badge'],
+  };
+  elements.hosts_badge = {
+    type: 'badge' as const,
+    props: { label: `${ep.duration}`, color: 'gray' as const, icon: 'clock' as const },
+  };
+
+  elements.ep_about_item = {
+    type: 'item' as const,
+    props: {
+      title: 'About This Episode',
+      description: ep.description,
     },
-    desc: {
-      type: 'text' as const,
-      props: { content: ep.description, size: 'sm' as const },
-    },
-    badges: {
-      type: 'stack' as const,
-      props: { direction: 'horizontal' as const, gap: 'sm' as const },
-      children: ep.isNew
-        ? ['new_badge', 'topic_badge', 'dur_badge']
-        : ['topic_badge', 'dur_badge'],
-    },
-    new_badge: {
-      type: 'badge' as const,
-      props: { label: 'NEW', color: 'green' as const },
-    },
-    topic_badge: {
-      type: 'badge' as const,
-      props: { label: ep.topic, color: 'blue' as const },
-    },
-    dur_badge: {
-      type: 'badge' as const,
-      props: { label: ep.duration, color: 'gray' as const },
-    },
-    btn_listen: {
-      type: 'button' as const,
-      props: { label: 'Listen Now', variant: 'primary' as const, icon: 'play' as const },
-      on: {
-        press: ep.listenUrl
-          ? { action: 'open_url' as const, params: { url: ep.listenUrl } }
-          : { action: 'submit' as const, params: { target: `${baseUrl}/` } },
-      },
-    },
-    btn_row: {
-      type: 'stack' as const,
-      props: { direction: 'horizontal' as const, gap: 'sm' as const },
-      children: ['share_btn', 'hosts_btn', 'episodes_btn'],
-    },
-    share_btn: {
-      type: 'button' as const,
-      props: { label: 'Share', icon: 'share' as const },
-      on: {
-        press: {
-          action: 'compose_cast' as const,
-          params: {
-            text: `Listening to "${ep.title}" on ${SHOW.name} with ${ep.guests}`,
-            embeds: [baseUrl],
+  };
+
+  // Action buttons row 1: Listen + Share
+  children.push('btn_primary');
+  elements.btn_primary = {
+    type: 'stack' as const,
+    props: { direction: 'horizontal' as const, gap: 'sm' as const },
+    children: ['listen_btn', 'share_btn'],
+  };
+
+  elements.listen_btn = {
+    type: 'button' as const,
+    props: { label: 'Listen Now', variant: 'primary' as const, icon: 'play' as const },
+    on: {
+      press: ep.listenUrl
+        ? { action: 'open_url' as const, params: { url: ep.listenUrl } }
+        : {
+            action: 'compose_cast' as const,
+            params: {
+              text: `${SHOW.name} - coming soon! Follow @zaal @ohnahji @wethemniggas for updates`,
+              embeds: [baseUrl],
+            },
           },
-        },
-      },
     },
-    hosts_btn: {
-      type: 'button' as const,
-      props: { label: 'Hosts', icon: 'users' as const },
-      on: {
-        press: {
-          action: 'submit' as const,
-          params: { target: `${baseUrl}/hosts` },
-        },
-      },
-    },
-    episodes_btn: {
-      type: 'button' as const,
-      props: { label: 'Episodes', icon: 'list' as const },
-      on: {
-        press: {
-          action: 'submit' as const,
-          params: { target: `${baseUrl}/episodes` },
+  };
+
+  elements.share_btn = {
+    type: 'button' as const,
+    props: { label: 'Share', icon: 'share' as const },
+    on: {
+      press: {
+        action: 'compose_cast' as const,
+        params: {
+          text: `"${ep.title}" on ${SHOW.name}\n\n${ep.description}\n\nWith ${ep.guests}`,
+          embeds: [baseUrl],
         },
       },
     },
   };
 
-  if (SHOW.coverImage) {
-    elements.cover = {
-      type: 'image' as const,
-      props: { src: SHOW.coverImage, aspectRatio: '16:9' as const },
-    };
-  }
+  // Action buttons row 2: Hosts + Episodes
+  children.push('btn_secondary');
+  elements.btn_secondary = {
+    type: 'stack' as const,
+    props: { direction: 'horizontal' as const, gap: 'sm' as const },
+    children: ['hosts_btn', 'episodes_btn'],
+  };
+
+  elements.hosts_btn = {
+    type: 'button' as const,
+    props: { label: 'Meet the Hosts', icon: 'users' as const },
+    on: {
+      press: {
+        action: 'submit' as const,
+        params: { target: `${baseUrl}/hosts` },
+      },
+    },
+  };
+
+  elements.episodes_btn = {
+    type: 'button' as const,
+    props: { label: 'All Episodes', icon: 'list' as const },
+    on: {
+      press: {
+        action: 'submit' as const,
+        params: { target: `${baseUrl}/episodes` },
+      },
+    },
+  };
+
+  // Assemble page
+  elements.page = {
+    type: 'stack' as const,
+    props: { direction: 'vertical' as const, gap: 'md' as const },
+    children,
+  };
 
   return {
     version: '2.0' as const,
-    theme: { accent: 'blue' as const },
+    theme: { accent: 'purple' as const },
     ui: { root: 'page', elements },
   };
 }

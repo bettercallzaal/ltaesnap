@@ -2,13 +2,31 @@ import type { Episode } from '../data/episodes.js';
 import { SHOW } from '../data/episodes.js';
 
 export function buildEpisodesPage(eps: Episode[], baseUrl: string) {
-  const itemIds: string[] = [];
   const elements: Record<string, any> = {};
+
+  // Header
+  elements.header = {
+    type: 'item' as const,
+    props: {
+      title: SHOW.name,
+      description: `${eps.length} episode${eps.length === 1 ? '' : 's'}`,
+    },
+    children: ['ep_count_badge'],
+  };
+  elements.ep_count_badge = {
+    type: 'badge' as const,
+    props: { label: 'Episodes', color: 'purple' as const, icon: 'play' as const },
+  };
+
+  // Episode items
+  const itemIds: string[] = [];
 
   eps.forEach((ep, i) => {
     const itemId = `ep_${i}`;
     const badgeId = `badge_${i}`;
     itemIds.push(itemId);
+
+    const badgeChildren: string[] = [badgeId];
 
     elements[itemId] = {
       type: 'item' as const,
@@ -16,42 +34,34 @@ export function buildEpisodesPage(eps: Episode[], baseUrl: string) {
         title: `Ep ${ep.number}: ${ep.title}`,
         description: `${ep.guests} - ${ep.duration}`,
       },
-      children: ep.isNew ? [badgeId] : undefined,
-      on: ep.listenUrl
-        ? { press: { action: 'open_url' as const, params: { url: ep.listenUrl } } }
-        : undefined,
+      children: badgeChildren,
     };
 
-    if (ep.isNew) {
-      elements[badgeId] = {
-        type: 'badge' as const,
-        props: { label: 'NEW', color: 'green' as const },
-      };
-    }
+    elements[badgeId] = {
+      type: 'badge' as const,
+      props: ep.isNew
+        ? { label: 'NEW', color: 'green' as const, icon: 'zap' as const }
+        : { label: ep.topic, color: 'blue' as const },
+    };
   });
-
-  elements.page = {
-    type: 'stack' as const,
-    props: { direction: 'vertical' as const, gap: 'md' as const },
-    children: ['header', 'tagline', 'ep_list', 'btn_row'],
-  };
-
-  elements.header = {
-    type: 'text' as const,
-    props: { content: SHOW.name, weight: 'bold' as const },
-  };
-
-  elements.tagline = {
-    type: 'text' as const,
-    props: { content: SHOW.tagline, size: 'sm' as const },
-  };
 
   elements.ep_list = {
     type: 'item_group' as const,
-    props: {},
+    props: { separator: true },
     children: itemIds,
   };
 
+  // Tagline
+  elements.tagline = {
+    type: 'text' as const,
+    props: {
+      content: SHOW.tagline,
+      size: 'sm' as const,
+      align: 'center' as const,
+    },
+  };
+
+  // Buttons
   elements.btn_row = {
     type: 'stack' as const,
     props: { direction: 'horizontal' as const, gap: 'sm' as const },
@@ -71,7 +81,7 @@ export function buildEpisodesPage(eps: Episode[], baseUrl: string) {
 
   elements.share_btn = {
     type: 'button' as const,
-    props: { label: 'Share Show', icon: 'share' as const },
+    props: { label: 'Share Show', variant: 'primary' as const, icon: 'share' as const },
     on: {
       press: {
         action: 'compose_cast' as const,
@@ -83,9 +93,16 @@ export function buildEpisodesPage(eps: Episode[], baseUrl: string) {
     },
   };
 
+  // Page
+  elements.page = {
+    type: 'stack' as const,
+    props: { direction: 'vertical' as const, gap: 'md' as const },
+    children: ['header', 'ep_list', 'tagline', 'btn_row'],
+  };
+
   return {
     version: '2.0' as const,
-    theme: { accent: 'blue' as const },
+    theme: { accent: 'purple' as const },
     ui: { root: 'page', elements },
   };
 }
