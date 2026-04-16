@@ -117,17 +117,17 @@ export function buildEpisodePage(ep: Episode, baseUrl: string) {
     },
   };
 
-  // Action buttons row 2: Hosts + Episodes
+  // Action buttons row 2: Hosts + Story + Episodes
   children.push('btn_secondary');
   elements.btn_secondary = {
     type: 'stack' as const,
     props: { direction: 'horizontal' as const, gap: 'sm' as const },
-    children: ['hosts_btn', 'episodes_btn'],
+    children: ['hosts_btn', 'story_btn', 'episodes_btn'],
   };
 
   elements.hosts_btn = {
     type: 'button' as const,
-    props: { label: 'Meet the Hosts', icon: 'users' as const },
+    props: { label: 'Hosts', icon: 'users' as const },
     on: {
       press: {
         action: 'submit' as const,
@@ -136,9 +136,20 @@ export function buildEpisodePage(ep: Episode, baseUrl: string) {
     },
   };
 
+  elements.story_btn = {
+    type: 'button' as const,
+    props: { label: 'Our Story', icon: 'star' as const },
+    on: {
+      press: {
+        action: 'submit' as const,
+        params: { target: `${baseUrl}/story` },
+      },
+    },
+  };
+
   elements.episodes_btn = {
     type: 'button' as const,
-    props: { label: 'All Episodes', icon: 'list' as const },
+    props: { label: 'Episodes', icon: 'list' as const },
     on: {
       press: {
         action: 'submit' as const,

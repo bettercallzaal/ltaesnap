@@ -3,6 +3,7 @@ import { registerSnapHandler } from '@farcaster/snap-hono';
 import { buildEpisodePage } from './pages/episode.js';
 import { buildEpisodesPage } from './pages/episodes.js';
 import { buildHostsPage } from './pages/hosts.js';
+import { buildStoryPage } from './pages/story.js';
 import { episodes } from './data/episodes.js';
 import { getBaseUrl } from './utils.js';
 
@@ -33,6 +34,16 @@ registerSnapHandler(
     return buildHostsPage(baseUrl);
   },
   { path: '/hosts' },
+);
+
+// Origin story page
+registerSnapHandler(
+  app,
+  async (ctx) => {
+    const baseUrl = getBaseUrl(ctx.request);
+    return buildStoryPage(baseUrl);
+  },
+  { path: '/story' },
 );
 
 export default app;
