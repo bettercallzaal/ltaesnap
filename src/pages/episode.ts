@@ -87,12 +87,15 @@ export function buildEpisodePage(ep: Episode, baseUrl: string) {
     children: ['listen_btn', 'share_btn'],
   };
 
+  // Pick best available URL: listenUrl (podcast platform) > youtubeUrl > fallback
+  const watchUrl = ep.listenUrl || ep.youtubeUrl;
+
   elements.listen_btn = {
     type: 'button' as const,
-    props: { label: 'Listen Now', variant: 'primary' as const, icon: 'play' as const },
+    props: { label: watchUrl ? 'Watch' : 'Coming Soon', variant: 'primary' as const, icon: 'play' as const },
     on: {
-      press: ep.listenUrl
-        ? { action: 'open_url' as const, params: { url: ep.listenUrl } }
+      press: watchUrl
+        ? { action: 'open_url' as const, params: { url: watchUrl } }
         : {
             action: 'compose_cast' as const,
             params: {

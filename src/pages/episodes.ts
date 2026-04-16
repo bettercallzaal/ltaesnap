@@ -28,6 +28,8 @@ export function buildEpisodesPage(eps: Episode[], baseUrl: string) {
 
     const badgeChildren: string[] = [badgeId];
 
+    const watchUrl = ep.listenUrl || ep.youtubeUrl;
+
     elements[itemId] = {
       type: 'item' as const,
       props: {
@@ -35,6 +37,9 @@ export function buildEpisodesPage(eps: Episode[], baseUrl: string) {
         description: `${ep.guests} - ${ep.duration}`,
       },
       children: badgeChildren,
+      on: watchUrl
+        ? { press: { action: 'open_url' as const, params: { url: watchUrl } } }
+        : undefined,
     };
 
     elements[badgeId] = {
